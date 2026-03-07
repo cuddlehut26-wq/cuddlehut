@@ -524,18 +524,19 @@ const initCuddleHut = () => {
           let colorHtml = "";
           window.selectedColor = null;
           if (p.colors && p.colors.length > 0) {
-              window.selectedColor = p.colors[0].name; // Auto-select the first color
+              window.selectedColor = typeof p.colors[0] === 'object' ? p.colors[0].name : p.colors[0]; 
               colorHtml = `
                 <label style="display:block; margin-bottom: 5px; font-weight: bold; color: #555;">Select Color:</label>
                 <div style="display:flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-                  ${p.colors.map((c, i) => `
-                    <div class="color-option" data-color="${c.name}" 
-                         style="width: 35px; height: 35px; border-radius: 50%; background-color: ${c.hex}; 
-                                border: 3px solid ${i === 0 ? 'var(--dmc-976)' : '#ccc'}; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" 
-                         title="${c.name}" 
-                         onclick="document.querySelectorAll('.color-option').forEach(el=>el.style.borderColor='#ccc'); this.style.borderColor='var(--dmc-976)'; window.selectedColor = '${c.name}';">
+                  ${p.colors.map((c, i) => {
+                    const cName = typeof c === 'object' ? c.name : c;
+                    return `
+                    <div class="color-option" data-color="${cName}" 
+                         style="padding: 10px 18px; border-radius: 8px; border: 2px solid ${i === 0 ? 'var(--dmc-976)' : '#ccc'}; cursor: pointer; font-weight: bold; background: var(--white); color: var(--dmc-3021); transition: all 0.3s ease;" 
+                         onclick="document.querySelectorAll('.color-option').forEach(el=>el.style.borderColor='#ccc'); this.style.borderColor='var(--dmc-976)'; window.selectedColor = '${cName}';">
+                         ${cName}
                     </div>
-                  `).join('')}
+                  `}).join('')}
                 </div>
               `;
           }

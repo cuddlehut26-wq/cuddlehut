@@ -145,19 +145,7 @@ document.getElementById('add-type-btn').addEventListener('click', () => handleAd
 const modal = document.getElementById('product-modal');
 const productForm = document.getElementById('product-form');
 const varContainer = document.getElementById('variations-container');
-const colorContainer = document.getElementById('colors-container');
 let isEditing = false;
-
-document.getElementById('add-color-btn').addEventListener('click', () => {
-    const row = document.createElement('div');
-    row.className = 'var-row';
-    row.innerHTML = `
-        <input type="text" placeholder="Color Name (e.g. Red)" class="color-name" required>
-        <input type="color" class="color-hex" value="#000000" style="padding:0; width: 40px; height: 40px; border:none; border-radius:4px; cursor:pointer;" required>
-        <button type="button" class="btn-small btn-danger" onclick="this.parentElement.remove()">X</button>
-    `;
-    colorContainer.appendChild(row);
-});
 
 document.getElementById('add-var-btn').addEventListener('click', () => {
     const row = document.createElement('div');
@@ -208,7 +196,7 @@ document.getElementById('open-add-modal-btn').addEventListener('click', () => {
   productForm.reset();
   document.getElementById('prod-file').value = ''; 
   varContainer.innerHTML = '';
-  colorContainer.innerHTML = '';
+  document.getElementById('prod-colors').value = '';
   document.getElementById('image-visualizer').innerHTML = '';
   document.getElementById('prod-id').value = '';
   document.getElementById('prod-existing-images').value = '[]';
@@ -241,19 +229,23 @@ productForm.addEventListener('submit', async (e) => {
 
     if (files.length > 0) {
       uploadStatus.style.display = "block";
-      const uploadPromises = Array.from(files).map(async (file) => {
+      // ImgBB drops concurrent uploads. A sequential loop fixes the "only one loads" issue.
+      for (let i = 0; i < files.length; i++) {
         const formData = new FormData();
-        formData.append('image', file);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        return data.data.url;
-      });
-      
-      const newUrls = await Promise.all(uploadPromises);
-      finalImages = finalImages.concat(newUrls);
+        formData.append('image', files[i]);
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data && data.data && data.data.url) {
+                finalImages.push(data.data.url);
+            }
+        } catch(error) {
+            console.error("Failed to upload image part", error);
+        }
+      }
       uploadStatus.style.display = "none";
     }
 
@@ -265,13 +257,9 @@ productForm.addEventListener('submit', async (e) => {
         });
     });
 
-    const colors = [];
-    document.querySelectorAll('#colors-container .var-row').forEach(row => {
-        colors.push({
-            name: row.querySelector('.color-name').value,
-            hex: row.querySelector('.color-hex').value
-        });
-    });
+    // Parse the simple comma-separated color string back into objects to retain DB compatibility
+    const colorInputStr = document.getElementById('prod-colors').value;
+    const colors = colorInputStr ? colorInputStr.split(',').map(c => ({ name: c.trim(), hex: "" })).filter(c => c.name !== "") : [];
 
     const id = document.getElementById('prod-id').value;
     
@@ -407,19 +395,11 @@ function editProduct(id) {
       });
   }
 
-  colorContainer.innerHTML = '';
-  if(p.colors && p.colors.length > 0) {
-      p.colors.forEach(c => {
-          const row = document.createElement('div');
-          row.className = 'var-row';
-          row.innerHTML = `
-              <input type="text" placeholder="Color Name (e.g. Red)" class="color-name" value="${c.name}" required>
-              <input type="color" class="color-hex" value="${c.hex}" style="padding:0; width: 40px; height: 40px; border:none; border-radius:4px; cursor:pointer;" required>
-              <button type="button" class="btn-small btn-danger" onclick="this.parentElement.remove()">X</button>
-          `;
-          colorContainer.appendChild(row);
-      });
+  let colorStr = "";
+  if (p.colors && p.colors.length > 0) {
+      colorStr = p.colors.map(c => typeof c === 'object' ? c.name : c).join(', ');
   }
+  document.getElementById('prod-colors').value = colorStr;
 
   const existingImgs = p.images ? p.images : (p.image ? [p.image] : []);
   document.getElementById('prod-existing-images').value = JSON.stringify(existingImgs);
