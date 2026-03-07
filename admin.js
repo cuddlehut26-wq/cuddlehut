@@ -208,9 +208,9 @@ document.getElementById('close-modal-btn').addEventListener('click', () => {
   modal.classList.remove('active');
 });
 
-// Faster Image Compression Helper
+// High-Speed Image Compression Helper
 const compressImage = (file) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         if (!file.type.startsWith('image/') || file.type === 'image/gif') {
             return resolve(file);
         }
@@ -222,9 +222,9 @@ const compressImage = (file) => {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                // Reduced dimensions for faster processing
-                const MAX_WIDTH = 800;
-                const MAX_HEIGHT = 800;
+                // Aggressive dimensions for speed
+                const MAX_WIDTH = 720;
+                const MAX_HEIGHT = 720;
                 let width = img.width;
                 let height = img.height;
 
@@ -242,12 +242,18 @@ const compressImage = (file) => {
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-                // Reduced quality from 0.8 to 0.7 for speed
+                // Lower quality slightly for much faster uploads
                 canvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error('Compression failed'));
+                        return;
+                    }
                     resolve(new File([blob], file.name, { type: outType, lastModified: Date.now() }));
-                }, outType, 0.7); 
+                }, outType, 0.65); 
             };
+            img.onerror = (err) => reject(err);
         };
+        reader.onerror = (err) => reject(err);
     });
 };
 
@@ -264,31 +270,57 @@ productForm.addEventListener('submit', async (e) => {
 
     if (files.length > 0) {
         uploadStatus.style.display = "block";
-        let uploadedCount = 0;
-        uploadStatus.innerText = `Optimizing & Uploading (0/${files.length})...`;
+        
+        // 1. Parallel Optimization: Compress everything at once for maximum speed
+        uploadStatus.innerText = `Optimizing ${files.length} images...`;
+        let compressedFiles;
+        try {
+            const compressionPromises = Array.from(files).map(file => compressImage(file));
+            compressedFiles = await Promise.all(compressionPromises);
+        } catch (compError) {
+            console.error("Compression failed:", compError);
+            alert("Failed to optimize images. Please try again with different files.");
+            btn.disabled = false;
+            uploadStatus.style.display = "none";
+            return;
+        }
 
-        // TRUE SEQUENTIAL UPLOAD LOOP (Fixes the hanging issue)
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const compressedFile = await compressImage(file);
+        // 2. Rapid Sequential Upload: Fire them off one by one
+        let uploadedCount = 0;
+        uploadStatus.innerText = `Uploading (0/${files.length})...`;
+
+        for (const compressedFile of compressedFiles) {
             const formData = new FormData();
             formData.append('image', compressedFile);
             
             try {
+                // Add a timeout so it doesn't hang forever on bad connections
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 
                 uploadedCount++;
-                uploadStatus.innerText = `Optimizing & Uploading (${uploadedCount}/${files.length})...`;
+                uploadStatus.innerText = `Uploading (${uploadedCount}/${files.length})...`;
                 
                 if (data && data.data && data.data.url) {
                     finalImages.push(data.data.url);
                 }
             } catch(error) {
                 console.error("Failed to upload image part", error);
+                if (error.name === 'AbortError') {
+                     alert(`An upload timed out. Network might be slow. Continuing with others.`);
+                } else {
+                     alert(`Failed to upload an image. It will be skipped.`);
+                }
             }
         }
         
