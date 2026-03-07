@@ -208,7 +208,7 @@ document.getElementById('close-modal-btn').addEventListener('click', () => {
   modal.classList.remove('active');
 });
 
-// Image Compression Helper
+// Faster Image Compression Helper
 const compressImage = (file) => {
     return new Promise((resolve) => {
         if (!file.type.startsWith('image/') || file.type === 'image/gif') {
@@ -222,8 +222,9 @@ const compressImage = (file) => {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1000;
-                const MAX_HEIGHT = 1000;
+                // Reduced dimensions for faster processing
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 800;
                 let width = img.width;
                 let height = img.height;
 
@@ -241,9 +242,10 @@ const compressImage = (file) => {
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                // Reduced quality from 0.8 to 0.7 for speed
                 canvas.toBlob((blob) => {
                     resolve(new File([blob], file.name, { type: outType, lastModified: Date.now() }));
-                }, outType, 0.8);
+                }, outType, 0.7); 
             };
         };
     });
@@ -265,7 +267,9 @@ productForm.addEventListener('submit', async (e) => {
         let uploadedCount = 0;
         uploadStatus.innerText = `Optimizing & Uploading (0/${files.length})...`;
 
-        const uploadPromises = Array.from(files).map(async (file) => {
+        // TRUE SEQUENTIAL UPLOAD LOOP (Fixes the hanging issue)
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
             const compressedFile = await compressImage(file);
             const formData = new FormData();
             formData.append('image', compressedFile);
@@ -281,18 +285,12 @@ productForm.addEventListener('submit', async (e) => {
                 uploadStatus.innerText = `Optimizing & Uploading (${uploadedCount}/${files.length})...`;
                 
                 if (data && data.data && data.data.url) {
-                    return data.data.url;
+                    finalImages.push(data.data.url);
                 }
-                return null;
             } catch(error) {
                 console.error("Failed to upload image part", error);
-                return null;
             }
-        });
-        
-        const results = await Promise.all(uploadPromises);
-        const newUrls = results.filter(url => url !== null);
-        finalImages = finalImages.concat(newUrls);
+        }
         
         uploadStatus.style.display = "none";
     }
