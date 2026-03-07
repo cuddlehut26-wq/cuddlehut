@@ -1,0 +1,168 @@
+/* shop.css */
+
+.shop-container {
+  padding: 140px 50px 50px; 
+  min-height: 100vh;
+}
+
+/* --- 1. THE GRID ---
+   auto-fill prevents a single item from stretching across the screen.
+   minmax(260px, 280px) strictly locks the card size.
+   justify-content: center keeps everything balanced in the middle. */
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(260px, 280px)); 
+  gap: 40px; 
+  justify-content: center; 
+}
+
+/* --- 2. THE PRODUCT CARD --- */
+.premium-card, .product-card {
+  background: var(--white); 
+  border-radius: 16px; 
+  box-shadow: 0 8px 25px rgba(68, 65, 60, 0.06); 
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden; /* Keeps the zoomed image inside the rounded corners */
+  color: var(--dmc-3021); 
+  cursor: pointer;
+  width: 100%;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+/* --- 3. THE PRODUCT IMAGE ---
+   object-fit: contain shows the whole bag without cropping.
+   padding: 20px acts like a studio backdrop. */
+/*shop.css*/
+/* ... other rules ... */
+
+/*THE PRODUCT IMAGE*/
+.card-img {
+  width: 100%;
+  height: 240px; /* A fixed height that fits tall products perfectly */
+  object-fit: contain; /* THE FIX: This shows the entire bag/product with NO cropping */
+  padding: 20px; /* Gives the product nice breathing room all around */
+  background-color: var(--white); /* Ensures any empty space matches the card's background */
+  border-bottom: 1px solid rgba(68, 65, 60, 0.05);
+  transition: transform 0.5s ease;
+}
+
+/* ... other rules ... */
+
+.card-content { 
+  padding: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  flex-grow: 1; 
+  text-align: center;
+}
+
+/* --- 4. THE HOVER EFFECTS --- */
+.interactive-card:hover, .product-card:hover {
+  transform: translateY(-8px); 
+  box-shadow: 0 15px 35px rgba(203, 122, 56, 0.15); 
+  border-color: var(--dmc-976); 
+}
+
+/* This specifically zooms the image inside the card when the card is hovered */
+.interactive-card:hover .card-img, .product-card:hover .card-img {
+  transform: scale(1.08); 
+}
+
+.interactive-card:hover h3, .interactive-card:hover h2 {
+  color: var(--dmc-976); 
+  transition: color 0.3s ease;
+}
+
+/* --- THE REVIEWS SYSTEM STYLES --- */
+.review-card {
+  background: var(--white); 
+  padding: 20px; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  border-left: 4px solid var(--dmc-976);
+}
+
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse; /* Reverses so sibling selector ~ works on preceding stars */
+  justify-content: flex-end;
+}
+.star-rating input { 
+  display: none; 
+}
+.star-rating label {
+  font-size: 2.5rem; 
+  color: #ccc; 
+  cursor: pointer; 
+  transition: color 0.2s; 
+  padding: 0 2px;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: var(--dmc-976); /* Highlights the stars in Cuddle Hut gold */
+}
+
+/* --- 5. THE SLIDING CART SIDEBAR --- */
+#cart-sidebar {
+  position: fixed;
+  right: -450px; /* Hidden off-screen by default */
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--dmc-739); 
+  box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+  transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 10001; /* Must be higher than the Nav */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The class that JavaScript adds to open the cart */
+#cart-sidebar.cart-open {
+  right: 0 !important; 
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--dmc-3021);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.cart-header button {
+  background: transparent; 
+  border: none; 
+  font-size: 1.5rem;
+  color: var(--dmc-3021); 
+  padding: 0; 
+  cursor: pointer;
+}
+
+#cart-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cart-footer {
+  border-top: 2px solid var(--dmc-3021);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+/* --- 6. MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .shop-container { padding: 180px 20px 50px; }
+  #cart-sidebar { width: 100%; right: -100%; }
+}

@@ -1,0 +1,234 @@
+/* index.css */
+
+#preloader-bg {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: var(--dmc-739); z-index: 9998; 
+}
+#preloader-logo-wrap {
+  position: fixed; z-index: 9999;
+}
+
+#nav-logo.home-logo { opacity: 0; }
+
+.logo-reveal {
+  width: 100%; height: auto; display: block;
+  clip-path: inset(100% 0 0 0); 
+  animation: wipeUpReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: translateY(20px);
+}
+@keyframes wipeUpReveal {
+  100% { clip-path: inset(0 0 0 0); transform: translateY(0); }
+}
+
+.hero-section { 
+  height: 100vh; display: flex; align-items: center; justify-content: center; 
+  padding: 0 20px; text-align: center; position: relative; z-index: 1;
+}
+
+/* Removed the solid background and shadow, added text shadow for video contrast */
+.hero-content {
+  background: transparent; 
+  padding: 60px; border-radius: 16px;
+  max-width: 800px; width: 100%; 
+  text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* Added friendly color classes for the hero text */
+.hero-title {
+  color: var(--dmc-739) !important;
+}
+
+.hero-subtitle {
+  color: #ffffff !important;
+}
+
+.scroll-section { 
+  padding: 100px 50px; min-height: 100vh; background: var(--dmc-739); 
+  position: relative; z-index: 10; 
+}
+
+/* --- THE BULLETPROOF GRID & CARDS --- */
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+  gap: 30px; 
+  align-items: stretch; /* Forces equal height cells */
+}
+
+.premium-card {
+  background: var(--white); 
+  border-radius: 16px; 
+  box-shadow: 0 8px 25px rgba(68, 65, 60, 0.06); 
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.4s ease, 
+              border-color 0.4s ease, 
+              background-color 0.4s ease;
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden;
+  color: var(--dmc-3021); 
+  cursor: pointer;
+  text-decoration: none; 
+  width: 100%;
+  height: 100%; 
+  box-sizing: border-box;
+  will-change: transform; 
+}
+
+.card-img {
+  width: 100%; 
+  height: 220px; 
+  object-fit: cover; 
+  flex-shrink: 0; 
+  border-bottom: 1px solid rgba(68, 65, 60, 0.05);
+  display: block;
+}
+
+.card-content { 
+  padding: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  flex: 1 1 auto; 
+}
+
+.interactive-card:hover {
+  transform: translateY(-6px) scale(1.02); box-shadow: 0 15px 35px rgba(203, 122, 56, 0.15); 
+  border-color: var(--dmc-976); background-color: var(--white);
+}
+.interactive-card:hover h3, .interactive-card:hover h2 {
+  color: var(--dmc-976); transition: color 0.3s ease;
+}
+
+/* --- HERO BUTTON FIX --- */
+.gsap-btn {
+  background-color: #44413c !important; color: #ffffff !important; padding: 16px 45px;
+  font-size: 1.1rem; font-weight: bold; border: none; border-radius: 50px;
+  cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative; z-index: 10;
+}
+.gsap-btn:hover {
+  background-color: #cb7a38 !important; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(203, 122, 56, 0.3);
+}
+
+/* --- PHILOSOPHY SECTION --- */
+.philosophy-section {
+  background-color: var(--white, #ffffff); padding: 100px 20px; text-align: center;
+  position: relative; z-index: 5; border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.philosophy-content { max-width: 850px; margin: 0 auto; }
+.stats-container { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; margin-top: 30px; }
+.stat-item h3 { margin-bottom: 5px; }
+
+/* --- SLIDESHOW BANNERS --- */
+.brand-slideshow-section {
+  width: 100vw; 
+  margin-left: calc(-50vw + 50%); 
+  margin-right: calc(-50vw + 50%); 
+  padding: 40px 0; 
+  position: relative; 
+  z-index: 10;
+  background: var(--dmc-739); 
+}
+
+/* Arrow Buttons */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(68, 65, 60, 0.7);
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.slider-arrow:hover {
+  background: var(--dmc-976);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prev-arrow { left: 20px; }
+.next-arrow { right: 20px; }
+
+/* Setup for Fade Animation */
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Base height for desktop */
+  overflow: hidden;
+}
+
+.slideshow-track {
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  z-index: 0;
+  display: block;
+  background-color: #ddd;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;
+}
+
+/* --- BRANDS SECTION --- */
+.brands-section {
+  padding: 80px 20px; background: var(--white); text-align: center; position: relative; z-index: 10;
+}
+.brands-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px; max-width: 1000px; margin: 40px auto 0; align-items: center; justify-content: center;
+}
+.brand-logo {
+  width: 100%; height: 100px; object-fit: contain; filter: grayscale(100%);
+  opacity: 0.6; transition: all 0.3s ease; cursor: pointer;
+}
+.brand-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .hero-content { padding: 40px 20px; margin-top: 100px; }
+  .hero-title { font-size: 2.5rem !important; }
+  .scroll-section { padding: 60px 20px; }
+  .stats-container { gap: 30px; flex-direction: column; }
+  .philosophy-section { padding: 70px 20px; }
+  
+  /* Mobile Slideshow Adjustments */
+  .brand-slideshow-section { padding: 20px 0; }
+  .slideshow-container { height: 250px; } 
+  .slide { width: 100vw; height: 100%; }
+  
+  /* Smaller arrows on mobile */
+  .slider-arrow { width: 40px; height: 40px; font-size: 1.2rem; }
+  .prev-arrow { left: 10px; }
+  .next-arrow { right: 10px; }
+}

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tXWcFPxjbDzvE70Ij-rHnY67PDc5NwqO13auUH4Kom8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Cuddle Hut | Premium Pet Store & Sanctuary</title>
+  <meta name="description" content="Cuddle Hut is your premium pet sanctuary and shop. Find the best cat food, dog toys, bird accessories, and pet grooming supplies locally sourced for your companion.">
+  <meta name="keywords" content="cuddlehut, cuddle hut, cuddle hut pet store, premium pet food, pet accessories, cat grooming, dog grooming, pet shop near me, organic pet treats">
+  <meta name="author" content="Cuddle Hut">
+  
+  <link rel="icon" type="image/png" href="Logo.png">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
+
+  <div id="preloader-bg"></div>
+  <div id="preloader-logo-wrap">
+    <img src="Logo.png" alt="Cuddle Hut Logo" class="logo-reveal">
+  </div>
+
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="hero-bg.mp4" type="video/mp4">
+  </video>
+  
+  <nav class="gsap-nav">
+    <div class="nav-left">
+      <button id="menu-toggle" class="dropbtn" style="font-size: 1.5rem; padding: 0;">☰</button>
+    </div>
+
+    <a href="index.html" class="brand-container">
+      <img src="Logo.png" id="nav-logo" class="home-logo" alt="Cuddle Hut">
+      <h2>Cuddle Hut</h2>
+    </a>
+    
+    <div class="nav-links" id="dynamic-nav"></div>
+  </nav>
+
+  <section class="hero-section" style="flex-direction: column;">
+    <div class="hero-content gsap-hero-card" style="margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 4rem; margin-bottom: 20px;">Care, Refined.</h1>
+      <p class="hero-subtitle" style="font-size: 1.2rem; line-height: 1.6;">Elevate your companion's lifestyle. Experience the pinnacle of pet sanctuaries and curated shop collections.</p>
+    </div>
+    <button onclick="window.location.href='shop.html'" class="gsap-btn">Enter Shop</button>
+  </section>
+
+  <section class="philosophy-section">
+    <div class="philosophy-content">
+      <h2 class="gs-phil-title" style="font-size: 2.5rem; margin-bottom: 20px;">The Standard of Pet Care</h2>
+      <p class="gs-phil-text" style="font-size: 1.15rem; color: #555; line-height: 1.8; margin-bottom: 40px;">
+        At Cuddle Hut, we believe our companions deserve the absolute finest. From locally sourced organic nutrition to artisan-crafted accessories, every piece in our collection is thoughtfully curated to enhance the well-being and lifestyle of your pet.
+      </p>
+      <div class="stats-container">
+        <div class="stat-item gs-stat">
+          <h3 style="font-size: 2.5rem; color: var(--dmc-976, #cb7a38);">100%</h3>
+          <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Organic Ingredients</p>
+        </div>
+        <div class="stat-item gs-stat">
+          <h3 style="font-size: 2.5rem; color: var(--dmc-976, #cb7a38);">Local</h3>
+          <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Artisan Partners</p>
+        </div>
+        <div class="stat-item gs-stat">
+          <h3 style="font-size: 2.5rem; color: var(--dmc-976, #cb7a38);">Premium</h3>
+          <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Quality Assured</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="brand-slideshow-section">
+    <button class="slider-arrow prev-arrow" aria-label="Previous Slide">&#10094;</button>
+    <button class="slider-arrow next-arrow" aria-label="Next Slide">&#10095;</button>
+    
+    <div class="slideshow-container" id="banner-slider">
+      <div class="slideshow-track">
+        <a href="shop.html?brand=Reflex" class="slide active">
+          <img src="Banner1.png" alt="Shop Reflex">
+        </a>
+        <a href="shop.html?brand=Petso" class="slide">
+          <img src="Banner2.png" alt="Shop Petso">
+        </a>
+        <a href="shop.html?brand=Nutripaw" class="slide">
+          <img src="Banner_Nutripaw.jpg" alt="Shop Nutripaw">
+        </a>
+        <a href="shop.html?brand=Crunchy" class="slide">
+          <img src="Banner_Crunchy.jpg" alt="Shop Crunchy">
+        </a>
+        <a href="shop.html?brand=Petso" class="slide">
+          <img src="Banner_Meatrix.jpg" alt="Shop Petso Meatrix">
+        </a>
+        <a href="shop.html?brand=Petline" class="slide">
+          <img src="Banner_Petline.jpg" alt="Shop Petline">
+        </a>
+        <a href="shop.html?brand=Diamond Naturals" class="slide">
+          <img src="Banner3.svg" alt="Shop Diamond Naturals">
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="scroll-section">
+    <h2 class="text-center gs-scroll-title" style="font-size: 3rem; margin-bottom: 60px; text-align: center;">Curated For Excellence</h2>
+    <div class="grid">
+      
+      <a href="shop.html?group=accessories" class="premium-card interactive-card gs-scroll-card">
+        <img src="ACCESSORIES.png" alt="Accessories" class="card-img">
+        <div class="card-content">
+          <h3>Accessories</h3>
+          <p style="margin-top: 15px; font-size: 0.95rem; text-align: center;">Handcrafted collars, beds, and stylish essentials.</p>
+        </div>
+      </a>
+
+      <a href="shop.html?group=food" class="premium-card interactive-card gs-scroll-card">
+        <img src="food.png" alt="Food" class="card-img">
+        <div class="card-content">
+          <h3>Food</h3>
+          <p style="margin-top: 15px; font-size: 0.95rem; text-align: center;">Locally sourced, premium nutrition for vitality.</p>
+        </div>
+      </a>
+
+      <a href="shop.html?group=toys" class="premium-card interactive-card gs-scroll-card">
+        <img src="toys.png" alt="Toys" class="card-img">
+        <div class="card-content">
+          <h3>Toys</h3>
+          <p style="margin-top: 15px; font-size: 0.95rem; text-align: center;">Engaging and durable playthings for endless fun.</p>
+        </div>
+      </a>
+
+      <a href="shop.html?group=treats" class="premium-card interactive-card gs-scroll-card">
+        <img src="treats.png" alt="Treats" class="card-img">
+        <div class="card-content">
+          <h3>Treats</h3>
+          <p style="margin-top: 15px; font-size: 0.95rem; text-align: center;">Delicious, healthy rewards for your faithful companion.</p>
+        </div>
+      </a>
+
+      <a href="shop.html?group=grooming" class="premium-card interactive-card gs-scroll-card">
+        <img src="Grooming.png" alt="Grooming" class="card-img">
+        <div class="card-content">
+          <h3>Grooming</h3>
+          <p style="margin-top: 15px; font-size: 0.95rem; text-align: center;">Essential products for keeping your pet clean and healthy.</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="brands-section">
+    <h2 style="font-size: 2.5rem; color: var(--dmc-3021);">Our Trusted Partners</h2>
+    <p style="color: #666; margin-top: 10px;">Only the best brands for your companions.</p>
+    <div class="brands-grid">
+      <a href="shop.html?brand=Reflex"><img src="ReflexLogo.svg" alt="Reflex" class="brand-logo"></a>
+      <a href="shop.html?brand=Petso"><img src="Petso.jpg" alt="Petso" class="brand-logo"></a>
+      <a href="shop.html?brand=Nutripaw"><img src="NutriPawsLogo.avif" alt="Nutripaw" class="brand-logo"></a>
+      <a href="shop.html?brand=Crunchy"><img src="crunchy.jpg" alt="Crunchy" class="brand-logo"></a>
+      <a href="shop.html?brand=NourVet"><img src="NourvetLogo.jpg" alt="NourVet" class="brand-logo"></a>
+      <a href="shop.html?brand=Petline"><img src="petline.png" alt="Petline" class="brand-logo"></a>
+      <a href="shop.html?brand=Diamond Naturals"><img src="Diamond-Logo_rev-1.webp" alt="Diamond Naturals" class="brand-logo"></a>
+      <a href="shop.html?brand=Klumpy"><img src="KlumpyLogo.png" alt="Klumpy" class="brand-logo"></a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <img src="Logo.png" alt="Cuddle Hut" class="footer-logo">
+      <h2 style="font-size: 2rem; margin-bottom: 10px;">Cuddle Hut</h2>
+      <p style="color: #555;">Your premium pet sanctuary and curated shop collection.</p>
+      
+      <div class="footer-contact">
+        <a href="mailto:cuddlehut26@gmail.com">
+          <span style="font-size: 1.2rem;">✉️</span> cuddlehut26@gmail.com
+        </a>
+        <a href="https://wa.me/923375915887" target="_blank">
+          <span style="font-size: 1.2rem;">📞</span> +92 337 591 5887
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Cuddle Hut. All rights reserved.
+    </div>
+  </footer>
+
+  <a href="https://wa.me/923375915887" class="floating-wa" target="_blank" aria-label="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16.05 1C7.75 1 1 7.75 1 16.05c0 2.65.65 5.2 1.95 7.5L1.1 30.9l7.5-1.85c2.2 1.15 4.65 1.8 7.35 1.8h.05c8.3 0 15.05-6.75 15.05-15.05S24.35 1 16.05 1zm0 25.35c-2.25 0-4.45-.6-6.4-1.75l-.45-.25-4.75 1.15 1.2-4.6-.3-.45c-1.25-2.05-1.9-4.4-1.9-6.85 0-6.9 5.6-12.5 12.55-12.5 3.35 0 6.5 1.3 8.85 3.65 2.35 2.35 3.65 5.5 3.65 8.85 0 6.9-5.6 12.55-12.5 12.55zm6.9-9.4c-.4-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.25-1.2 1.5-.2.25-.4.3-.8.1s-1.6-.6-3.05-1.9c-1.15-1-1.9-2.25-2.15-2.65-.25-.4 0-.6.2-.8.2-.2.4-.45.6-.7.2-.2.3-.4.4-.65.1-.25.05-.5-.05-.7-.1-.2-.85-2.1-1.15-2.85-.3-.75-.6-.65-.85-.65h-.7c-.3 0-.75.1-1.15.55-.4.4-1.5 1.45-1.5 3.55s1.55 4.15 1.75 4.4c.2.25 3 4.6 7.25 6.4 1 .4 1.8.65 2.45.85 1.05.3 2 .25 2.75.15.85-.1 2.25-.9 2.55-1.8.3-.9.3-1.65.2-1.8-.1-.15-.35-.25-.75-.45z"/>
+    </svg>
+  </a>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const slider = document.getElementById('banner-slider');
+      const slides = slider.querySelectorAll('.slide');
+      const nextBtn = document.querySelector('.next-arrow');
+      const prevBtn = document.querySelector('.prev-arrow');
+      
+      let currentSlide = 0;
+      let autoScrollInterval;
+
+      // Ensure the script only runs if there are slides
+      if (slides.length === 0) return;
+
+      const goToSlide = (index) => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+      };
+
+      const goNext = () => {
+        let nextIndex = (currentSlide + 1) % slides.length;
+        goToSlide(nextIndex);
+      };
+
+      const goPrev = () => {
+        let prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        goToSlide(prevIndex);
+      };
+
+      const startAutoScroll = () => {
+        autoScrollInterval = setInterval(goNext, 4000); // Change slide every 4 seconds
+      };
+
+      const resetAutoScroll = () => {
+        clearInterval(autoScrollInterval);
+        startAutoScroll();
+      };
+
+      // Manual Navigation
+      nextBtn.addEventListener('click', () => {
+        goNext();
+        resetAutoScroll();
+      });
+
+      prevBtn.addEventListener('click', () => {
+        goPrev();
+        resetAutoScroll();
+      });
+
+      // Pause auto-scrolling when the user hovers over the banner
+      slider.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+      slider.addEventListener('mouseleave', startAutoScroll);
+
+      startAutoScroll();
+    });
+  </script>
+
+</body>
+</html>

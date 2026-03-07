@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign In | Cuddle Hut</title>
+  <link rel="icon" type="image/png" href="Logo.png">
+  <link rel="stylesheet" href="global.css">
+  <script type="module" src="app.js" defer></script>
+</head>
+<body style="display:flex; align-items:center; justify-content:center; height:100vh; background-color: var(--cream);">
+  
+  <nav>
+    <a href="index.html" class="brand-container">
+      <img src="Logo.png" id="nav-logo" alt="Cuddle Hut">
+      <h2>Cuddle Hut</h2>
+    </a>
+    <div class="nav-links" id="dynamic-nav"></div>
+  </nav>
+
+  <div style="background: var(--white); padding: 50px; border-radius: 12px; box-shadow: var(--shadow); width: 450px; text-align: center;">
+    <h1 style="margin-bottom: 10px;">Welcome Back</h1>
+    <p style="margin-bottom: 30px; font-size: 0.9rem;">Access your curator account.</p>
+    
+    <form id="login-form" style="display:flex; flex-direction:column; gap: 20px;">
+      <input type="email" id="login-email" placeholder="Email Address" required style="padding: 15px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Montserrat';">
+      <input type="password" id="login-password" placeholder="Password" required style="padding: 15px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Montserrat';">
+      <button type="submit" style="margin-top: 10px; width: 100%;">Enter Portal</button>
+    </form>
+
+    <p style="margin-top: 30px; font-size: 0.9em;">
+      New to the sanctuary? <a href="signup.html" style="color: var(--olive); font-weight:bold;">Request Access.</a>
+    </p>
+  </div>
+
+</body>
+</html>

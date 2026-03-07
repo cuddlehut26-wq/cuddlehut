@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop | Cuddle Hut</title>
+  <meta name="description" content="Shop premium pet supplies at Cuddle Hut. Categories include cat, dog, and bird products, grooming, and new arrivals.">
+  <meta name="keywords" content="cuddle hut shop, pet store, pet accessories, buy pet food">
+  <link rel="icon" type="image/png" href="Logo.png">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="shop.css">
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="brand-container">
+      <img src="Logo.png" id="nav-logo" alt="Cuddle Hut" style="opacity: 1;">
+      <h2>Cuddle Hut</h2>
+    </a>
+    <div class="nav-links" id="dynamic-nav"></div>
+  </nav>
+
+  <div id="cart-sidebar">
+    <div class="cart-header">
+      <h2>Your Collection</h2>
+      <button id="close-cart">✕</button>
+    </div>
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+      <h3 style="display:flex; justify-content:space-between;">Total: <span>PKR <span id="cart-total">0.00</span></span></h3>
+      <button id="checkout-btn" style="width: 100%; margin-top: 20px;">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <div class="shop-container">
+    <h1 style="text-align:center; font-size: 3.5rem; margin-bottom: 10px;">The Shop</h1>
+    <p style="text-align:center; margin-bottom: 40px;">Curated essentials for your companion.</p>
+    
+    <div style="max-width: 850px; margin: 0 auto 50px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; position: relative;">
+      <div style="flex: 1; min-width: 300px; display: flex; gap: 10px; position: relative;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 2;">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search for food, toys, treats..." style="flex: 1; padding: 18px 20px 18px 55px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)'; this.style.boxShadow='0 0 0 3px rgba(203, 122, 56, 0.1)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.02)';">
+        <button id="search-btn" class="btn" style="padding: 18px 35px; border-radius: 50px;">Search</button>
+      </div>
+
+      <select id="sort-select" style="padding: 18px 25px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: bold; outline: none; background: var(--white); color: var(--dmc-3021); cursor: pointer; transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)';" onblur="this.style.borderColor='#ddd';">
+        <option value="default">Sort: Recommended</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="rating-desc">Highest Rated</option>
+      </select>
+    </div>
+    
+    <div id="active-brand-banner" style="display: none; text-align: center; margin-bottom: 40px;">
+        <img id="active-brand-img" src="" alt="Brand Logo" style="max-height: 80px; width: auto; object-fit: contain; margin-bottom: 15px;">
+        <h2 id="active-brand-name" style="color: var(--dmc-3021); font-size: 2rem;"></h2>
+        <hr style="width: 50px; border: 2px solid var(--dmc-976); margin: 15px auto 0;">
+    </div>
+
+    <div id="product-grid" class="grid">
+      <p style="text-align: center; width: 100%; grid-column: 1 / -1;">Initializing inventory...</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <img src="Logo.png" alt="Cuddle Hut" class="footer-logo">
+      <h2 style="font-size: 2rem; margin-bottom: 10px;">Cuddle Hut</h2>
+      <p style="color: #555;">Your premium pet sanctuary and curated shop collection.</p>
+      
+      <div class="footer-contact">
+        <a href="mailto:cuddlehut26@gmail.com">
+          <span style="font-size: 1.2rem;">✉️</span> cuddlehut26@gmail.com
+        </a>
+        <a href="https://wa.me/923423787505" target="_blank">
+          <span style="font-size: 1.2rem;">📞</span> +92 342 3787505
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Cuddle Hut. All rights reserved.
+    </div>
+  </footer>
+
+  <a href="https://wa.me/923423787505" class="floating-wa" target="_blank" aria-label="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16.05 1C7.75 1 1 7.75 1 16.05c0 2.65.65 5.2 1.95 7.5L1.1 30.9l7.5-1.85c2.2 1.15 4.65 1.8 7.35 1.8h.05c8.3 0 15.05-6.75 15.05-15.05S24.35 1 16.05 1zm0 25.35c-2.25 0-4.45-.6-6.4-1.75l-.45-.25-4.75 1.15 1.2-4.6-.3-.45c-1.25-2.05-1.9-4.4-1.9-6.85 0-6.9 5.6-12.5 12.55-12.5 3.35 0 6.5 1.3 8.85 3.65 2.35 2.35 3.65 5.5 3.65 8.85 0 6.9-5.6 12.55-12.5 12.55zm6.9-9.4c-.4-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.25-1.2 1.5-.2.25-.4.3-.8.1s-1.6-.6-3.05-1.9c-1.15-1-1.9-2.25-2.15-2.65-.25-.4 0-.6.2-.8.2-.2.4-.45.6-.7.2-.2.3-.4.4-.65.1-.25.05-.5-.05-.7-.1-.2-.85-2.1-1.15-2.85-.3-.75-.6-.65-.85-.65h-.7c-.3 0-.75.1-1.15.55-.4.4-1.5 1.45-1.5 3.55s1.55 4.15 1.75 4.4c.2.25 3 4.6 7.25 6.4 1 .4 1.8.65 2.45.85 1.05.3 2 .25 2.75.15.85-.1 2.25-.9 2.55-1.8.3-.9.3-1.65.2-1.8-.1-.15-.35-.25-.75-.45z"/>
+    </svg>
+  </a>
+</body>
+</html>
