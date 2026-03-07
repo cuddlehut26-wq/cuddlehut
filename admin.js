@@ -18,7 +18,7 @@ onAuthStateChanged(auth, (user) => {
   if (!user || user.email !== ADMIN_EMAIL) {
     window.location.href = "index.html";
   } else {
-    loadStoreSettings(); // Load variables safely
+    loadStoreSettings(); 
     loadUsers();
     loadProducts();
     loadOrders();
@@ -48,19 +48,16 @@ async function loadStoreSettings() {
         
         if (docSnap.exists()) {
             const data = docSnap.data();
-            // Merge DB safely with defaults so nothing is ever completely empty
             storeSettings.brands = data.brands && data.brands.length > 0 ? data.brands : defaultSettings.brands;
             storeSettings.categories = data.categories && data.categories.length > 0 ? data.categories : defaultSettings.categories;
             storeSettings.types = data.types && data.types.length > 0 ? data.types : defaultSettings.types;
         } else {
-            // Fails silently if Firebase blocks creation, but still loads local defaults!
             await setDoc(docRef, storeSettings).catch(e => console.warn("DB init blocked. Loading defaults locally."));
         }
     } catch (error) {
         console.warn("Database blocked settings load. Falling back to local defaults.", error);
         storeSettings = { ...defaultSettings };
     } finally {
-        // ALWAYS render the UI no matter what happens with the DB
         renderSettingsUI();
         populateDropdowns();
     }
@@ -88,7 +85,6 @@ function populateDropdowns() {
         const currentVal = sel.value; 
         sel.innerHTML = arr.map(i => `<option value="${i}">${i}</option>`).join('');
         
-        // Retain selection safely
         if(arr.includes(currentVal)) {
             sel.value = currentVal; 
         } else if (arr.length > 0) {
@@ -100,7 +96,6 @@ function populateDropdowns() {
     pop('prod-type', storeSettings.types);
 }
 
-// Optimistic UI updates - instantly updates the screen, then saves in the background
 window.removeSettingItem = async (type, index) => {
     if(confirm("Delete this option? Existing products will keep it until you edit them.")) {
         storeSettings[type].splice(index, 1);
@@ -123,16 +118,13 @@ const handleAddSetting = async (inputId, type) => {
         storeSettings[type].push(val);
         input.value = '';
         
-        // Instantly update UI!
         renderSettingsUI();
         populateDropdowns();
 
         try {
-            // Push to DB in the background
             await setDoc(doc(db, "settings", "lists"), storeSettings, { merge: true });
         } catch(e) {
             console.error("Firebase block: Could not save to DB.", e);
-            // It still works perfectly for this session though!
         }
     }
 };
@@ -216,6 +208,47 @@ document.getElementById('close-modal-btn').addEventListener('click', () => {
   modal.classList.remove('active');
 });
 
+// Image Compression Helper
+const compressImage = (file) => {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/') || file.type === 'image/gif') {
+            return resolve(file);
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                const MAX_HEIGHT = 1000;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height && width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                } else if (height > width && height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                canvas.toBlob((blob) => {
+                    resolve(new File([blob], file.name, { type: outType, lastModified: Date.now() }));
+                }, outType, 0.8);
+            };
+        };
+    });
+};
+
 productForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = document.getElementById('save-product-btn');
@@ -228,25 +261,40 @@ productForm.addEventListener('submit', async (e) => {
     const files = fileInput.files;
 
     if (files.length > 0) {
-      uploadStatus.style.display = "block";
-      // ImgBB drops concurrent uploads. A sequential loop fixes the "only one loads" issue.
-      for (let i = 0; i < files.length; i++) {
-        const formData = new FormData();
-        formData.append('image', files[i]);
-        try {
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            if (data && data.data && data.data.url) {
-                finalImages.push(data.data.url);
+        uploadStatus.style.display = "block";
+        let uploadedCount = 0;
+        uploadStatus.innerText = `Optimizing & Uploading (0/${files.length})...`;
+
+        const uploadPromises = Array.from(files).map(async (file) => {
+            const compressedFile = await compressImage(file);
+            const formData = new FormData();
+            formData.append('image', compressedFile);
+            
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                uploadedCount++;
+                uploadStatus.innerText = `Optimizing & Uploading (${uploadedCount}/${files.length})...`;
+                
+                if (data && data.data && data.data.url) {
+                    return data.data.url;
+                }
+                return null;
+            } catch(error) {
+                console.error("Failed to upload image part", error);
+                return null;
             }
-        } catch(error) {
-            console.error("Failed to upload image part", error);
-        }
-      }
-      uploadStatus.style.display = "none";
+        });
+        
+        const results = await Promise.all(uploadPromises);
+        const newUrls = results.filter(url => url !== null);
+        finalImages = finalImages.concat(newUrls);
+        
+        uploadStatus.style.display = "none";
     }
 
     const variations = [];
@@ -257,7 +305,6 @@ productForm.addEventListener('submit', async (e) => {
         });
     });
 
-    // Parse the simple comma-separated color string back into objects to retain DB compatibility
     const colorInputStr = document.getElementById('prod-colors').value;
     const colors = colorInputStr ? colorInputStr.split(',').map(c => ({ name: c.trim(), hex: "" })).filter(c => c.name !== "") : [];
 
