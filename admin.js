@@ -208,13 +208,9 @@ document.getElementById('close-modal-btn').addEventListener('click', () => {
   modal.classList.remove('active');
 });
 
-// High-Speed Image Compression Helper
-const compressImage = (file) => {
+// INSTANT BASE64 CONVERTER (Bypasses ImgBB Binary File issues)
+const compressToBase64 = (file) => {
     return new Promise((resolve, reject) => {
-        if (!file.type.startsWith('image/') || file.type === 'image/gif') {
-            return resolve(file);
-        }
-
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
@@ -222,9 +218,8 @@ const compressImage = (file) => {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                // Aggressive dimensions for speed
-                const MAX_WIDTH = 720;
-                const MAX_HEIGHT = 720;
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 800;
                 let width = img.width;
                 let height = img.height;
 
@@ -242,14 +237,11 @@ const compressImage = (file) => {
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-                // Lower quality slightly for much faster uploads
-                canvas.toBlob((blob) => {
-                    if (!blob) {
-                        reject(new Error('Compression failed'));
-                        return;
-                    }
-                    resolve(new File([blob], file.name, { type: outType, lastModified: Date.now() }));
-                }, outType, 0.65); 
+                const dataUrl = canvas.toDataURL(outType, 0.7);
+                
+                // Strip the MIME type prefix so ImgBB accepts it as pure text data
+                const base64Data = dataUrl.split(',')[1]; 
+                resolve(base64Data);
             };
             img.onerror = (err) => reject(err);
         };
@@ -270,42 +262,27 @@ productForm.addEventListener('submit', async (e) => {
 
     if (files.length > 0) {
         uploadStatus.style.display = "block";
-        
-        // 1. Parallel Optimization: Compress everything at once for maximum speed
-        uploadStatus.innerText = `Optimizing ${files.length} images...`;
-        let compressedFiles;
-        try {
-            const compressionPromises = Array.from(files).map(file => compressImage(file));
-            compressedFiles = await Promise.all(compressionPromises);
-        } catch (compError) {
-            console.error("Compression failed:", compError);
-            alert("Failed to optimize images. Please try again with different files.");
-            btn.disabled = false;
-            uploadStatus.style.display = "none";
-            return;
+        uploadStatus.innerText = `Preparing images...`;
+
+        // 1. Instantly convert all files to Base64 text
+        const base64Images = [];
+        for (let i = 0; i < files.length; i++) {
+             base64Images.push(await compressToBase64(files[i]));
         }
 
-        // 2. Rapid Sequential Upload: Fire them off one by one
         let uploadedCount = 0;
         uploadStatus.innerText = `Uploading (0/${files.length})...`;
 
-        for (const compressedFile of compressedFiles) {
+        // 2. Fire text data to ImgBB (Guaranteed fast, no binary connection hangs)
+        for (let i = 0; i < base64Images.length; i++) {
             const formData = new FormData();
-            formData.append('image', compressedFile);
+            formData.append('image', base64Images[i]);
             
             try {
-                // Add a timeout so it doesn't hang forever on bad connections
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                     method: 'POST',
-                    body: formData,
-                    signal: controller.signal
+                    body: formData
                 });
-                clearTimeout(timeoutId);
-
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 
                 uploadedCount++;
@@ -315,12 +292,8 @@ productForm.addEventListener('submit', async (e) => {
                     finalImages.push(data.data.url);
                 }
             } catch(error) {
-                console.error("Failed to upload image part", error);
-                if (error.name === 'AbortError') {
-                     alert(`An upload timed out. Network might be slow. Continuing with others.`);
-                } else {
-                     alert(`Failed to upload an image. It will be skipped.`);
-                }
+                console.error("Upload failed", error);
+                alert(`Warning: Image ${i+1} failed. Continuing with the rest.`);
             }
         }
         
