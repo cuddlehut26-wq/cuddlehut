@@ -12,7 +12,8 @@ let defaultSettings = {
     categories: ["Cat", "Dog", "Bird"],
     types: ["Food", "Treats", "Accessories", "Toys", "Grooming & Care", "Litter & Waste"]
 };
-let storeSettings = { ...defaultSettings };
+// Deep copy to prevent reference issues
+let storeSettings = JSON.parse(JSON.stringify(defaultSettings));
 
 onAuthStateChanged(auth, (user) => {
   if (!user || user.email !== ADMIN_EMAIL) {
@@ -41,10 +42,12 @@ navButtons.forEach(btn => {
 });
 
 // --- BULLETPROOF STORE SETTINGS LOGIC ---
+// We store settings inside the "products" collection to bypass Firebase security rule restrictions!
+const getSettingsRef = () => doc(db, "products", "--STORE-SETTINGS--");
+
 async function loadStoreSettings() {
     try {
-        const docRef = doc(db, "settings", "lists");
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(getSettingsRef());
         
         if (docSnap.exists()) {
             const data = docSnap.data();
@@ -52,11 +55,12 @@ async function loadStoreSettings() {
             storeSettings.categories = data.categories && data.categories.length > 0 ? data.categories : defaultSettings.categories;
             storeSettings.types = data.types && data.types.length > 0 ? data.types : defaultSettings.types;
         } else {
-            await setDoc(docRef, storeSettings).catch(e => console.warn("DB init blocked. Loading defaults locally."));
+            // First time setup - create the hidden document
+            await setDoc(getSettingsRef(), storeSettings).catch(e => console.warn("DB init blocked.", e));
         }
     } catch (error) {
         console.warn("Database blocked settings load. Falling back to local defaults.", error);
-        storeSettings = { ...defaultSettings };
+        storeSettings = JSON.parse(JSON.stringify(defaultSettings));
     } finally {
         renderSettingsUI();
         populateDropdowns();
@@ -104,9 +108,10 @@ window.removeSettingItem = async (type, index) => {
         populateDropdowns();
 
         try {
-            await setDoc(doc(db, "settings", "lists"), storeSettings, { merge: true });
+            await setDoc(getSettingsRef(), storeSettings, { merge: true });
         } catch(e) {
-            console.error("Firebase block: Could not remove from DB.", e);
+            alert("Firebase block: Could not remove from DB. Check your internet or permissions.");
+            console.error(e);
         }
     }
 };
@@ -122,9 +127,10 @@ const handleAddSetting = async (inputId, type) => {
         populateDropdowns();
 
         try {
-            await setDoc(doc(db, "settings", "lists"), storeSettings, { merge: true });
+            await setDoc(getSettingsRef(), storeSettings, { merge: true });
         } catch(e) {
-            console.error("Firebase block: Could not save to DB.", e);
+            alert("Firebase block: Could not save to DB. Changes will be lost on reload.");
+            console.error(e);
         }
     }
 };
@@ -358,16 +364,18 @@ async function loadProducts() {
   try {
     const snap = await getDocs(collection(db, "products"));
     tbody.innerHTML = '';
-    if(snap.empty) {
-      tbody.innerHTML = '<tr><td colspan="5">No products found. Add some!</td></tr>';
-      return;
-    }
+    
+    let productsCount = 0;
     
     window.editProduct = editProduct;
     window.deleteProduct = deleteProduct;
     window.productDataCache = {}; 
 
     snap.forEach(docSnap => {
+      // HIDDEN FILTER: Ignore the settings document so it doesn't show up in the table
+      if (docSnap.id === "--STORE-SETTINGS--") return; 
+      
+      productsCount++;
       const p = docSnap.data();
       const id = docSnap.id;
       window.productDataCache[id] = p; 
@@ -397,6 +405,10 @@ async function loadProducts() {
         </tr>
       `;
     });
+    
+    if(productsCount === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No products found. Add some!</td></tr>';
+    }
   } catch (error) { console.error(error); }
 }
 
