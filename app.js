@@ -424,7 +424,7 @@ const initCuddleHut = () => {
             if (!matchName && !matchDesc && !matchSeo && !matchBrand) return; 
           }
 
-          p.finalPrice = p.discount > 0 ? p.price - (p.price * (p.discount / 100)) : p.price;
+          p.finalPrice = (p.discountedPrice && p.discountedPrice > 0 && p.discountedPrice < p.price) ? p.discountedPrice : p.price;
           const pReviews = allReviews.filter(r => r.productId === p.id);
           p.reviewCount = pReviews.length;
           p.avgRating = 0;
@@ -452,7 +452,7 @@ const initCuddleHut = () => {
           }
 
           let priceHtml = `<h3 style="color: var(--dmc-3021); margin: 10px 0 15px;">PKR ${p.price.toFixed(2)}</h3>`;
-          if (p.discount && p.discount > 0) {
+          if (p.discountedPrice && p.discountedPrice > 0 && p.discountedPrice < p.price) {
             priceHtml = `
               <div style="margin: 10px 0 15px;">
                 <span style="text-decoration: line-through; color: #999; font-size: 0.9em; margin-right: 10px;">PKR ${p.price.toFixed(2)}</span>
@@ -517,8 +517,8 @@ const initCuddleHut = () => {
           const p = docSnap.data();
           let finalPrice = p.price;
           
-          if (p.discount && p.discount > 0) {
-            finalPrice = p.price - (p.price * (p.discount / 100));
+          if (p.discountedPrice && p.discountedPrice > 0 && p.discountedPrice < p.price) {
+            finalPrice = p.discountedPrice;
           }
 
           const imageArray = p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : ["https://via.placeholder.com/400"]);
@@ -559,11 +559,7 @@ const initCuddleHut = () => {
                 <select id="variation-select" style="padding: 12px; margin-bottom: 20px; width: 100%; border-radius: 8px; border: 1px solid #ccc; font-family:'Montserrat'; cursor: pointer;">
                   <option value="${finalPrice}" data-name="${p.name.replace(/'/g, "\\'")}">Standard Base - PKR ${finalPrice.toFixed(2)}</option>
                   ${p.variations.map(v => {
-                      // FIX: Apply the product's discount percentage to the variation prices too
                       let vFinalPrice = v.price;
-                      if (p.discount && p.discount > 0) {
-                          vFinalPrice = v.price - (v.price * (p.discount / 100));
-                      }
                       return `<option value="${vFinalPrice}" data-name="${p.name.replace(/'/g, "\\'")} (${v.name})">${v.name} - PKR ${vFinalPrice.toFixed(2)}</option>`;
                   }).join('')}
                 </select>
@@ -582,7 +578,7 @@ const initCuddleHut = () => {
               <p style="font-size: 1.1rem; line-height: 1.8; color: #555;">${p.description}</p>
               
               <div style="margin: 20px 0 30px;">
-                ${p.discount > 0 ? `<span style="text-decoration: line-through; color: #999; font-size: 1.5rem; margin-right: 15px;">PKR ${p.price.toFixed(2)}</span>` : ''}
+                ${(p.discountedPrice && p.discountedPrice > 0 && p.discountedPrice < p.price) ? `<span style="text-decoration: line-through; color: #999; font-size: 1.5rem; margin-right: 15px;">PKR ${p.price.toFixed(2)}</span>` : ''}
                 <h2 id="dynamic-price-display" style="color: var(--dmc-976); display: inline; font-size: 2.5rem;">PKR ${finalPrice.toFixed(2)}</h2>
               </div>
 
@@ -727,7 +723,7 @@ const initCuddleHut = () => {
                  relatedWrapper.style.display = 'block'; 
                  relatedGrid.innerHTML = '';
                  relatedToDisplay.forEach(rp => {
-                     let relFinalPrice = rp.discount > 0 ? rp.price - (rp.price * (rp.discount / 100)) : rp.price;
+                     let relFinalPrice = (rp.discountedPrice && rp.discountedPrice > 0 && rp.discountedPrice < rp.price) ? rp.discountedPrice : rp.price;
                      const relReviews = allReviews.filter(r => r.productId === rp.id);
                      let relStarHtml = `<div style="color: #ccc; font-size: 0.9rem; margin: 5px 0;">☆ No reviews</div>`;
                      if (relReviews.length > 0) {
@@ -736,7 +732,7 @@ const initCuddleHut = () => {
                      }
 
                      let relPriceHtml = `<h3 style="color: var(--dmc-3021); margin: 10px 0 15px;">PKR ${rp.price.toFixed(2)}</h3>`;
-                     if (rp.discount && rp.discount > 0) {
+                     if (rp.discountedPrice && rp.discountedPrice > 0 && rp.discountedPrice < rp.price) {
                          relPriceHtml = `
                            <div style="margin: 10px 0 15px;">
                              <span style="text-decoration: line-through; color: #999; font-size: 0.9em; margin-right: 10px;">PKR ${rp.price.toFixed(2)}</span>

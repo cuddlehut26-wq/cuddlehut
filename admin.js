@@ -333,7 +333,7 @@ productForm.addEventListener('submit', async (e) => {
       isNewArrival: document.getElementById('prod-new-arrival').checked,
       isBestSeller: document.getElementById('prod-best-seller').checked,
       price: parseFloat(document.getElementById('prod-price').value),
-      discount: parseInt(document.getElementById('prod-discount').value) || 0,
+      discountedPrice: parseFloat(document.getElementById('prod-discounted-price').value) || 0,
       profit: parseFloat(document.getElementById('prod-profit').value) || 0,
       description: document.getElementById('prod-desc').value,
       seo: document.getElementById('prod-seo').value,
@@ -380,7 +380,7 @@ async function loadProducts() {
       const id = docSnap.id;
       window.productDataCache[id] = p; 
       
-      const discountTxt = p.discount > 0 ? `<span style="color:#a93226;">-${p.discount}%</span>` : "None";
+      const discountTxt = (p.discountedPrice > 0 && p.discountedPrice < p.price) ? `<span style="color:#a93226;">PKR ${p.discountedPrice.toFixed(2)}</span>` : "None";
       const thumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || "https://via.placeholder.com/400");
       
       const tagsHtml = `
@@ -438,7 +438,7 @@ function editProduct(id) {
   document.getElementById('prod-best-seller').checked = p.isBestSeller || false;
 
   document.getElementById('prod-price').value = p.price;
-  document.getElementById('prod-discount').value = p.discount || 0;
+  document.getElementById('prod-discounted-price').value = p.discountedPrice || 0;
   document.getElementById('prod-profit').value = p.profit || 0;
   document.getElementById('prod-desc').value = p.description || "";
   document.getElementById('prod-seo').value = p.seo || ""; 
