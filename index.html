@@ -41,6 +41,15 @@
     <div class="nav-links" id="dynamic-nav"></div>
   </nav>
 
+  <div id="cart-sidebar">
+    <div class="cart-header"><h2>Your Collection</h2><button id="close-cart">✕</button></div>
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+      <h3 style="display:flex; justify-content:space-between; color: var(--dmc-3021, #44413c);">Total: <span>PKR <span id="cart-total">0.00</span></span></h3>
+      <button id="checkout-btn" style="width: 100%; margin-top: 20px;">Proceed to Checkout</button>
+    </div>
+  </div>
+
   <section class="hero-section" style="flex-direction: column;">
     <div class="hero-content gsap-hero-card" style="margin-bottom: 30px;">
       <h1 class="hero-title" style="font-size: 4rem; margin-bottom: 20px;">Care, Refined.</h1>
@@ -77,29 +86,24 @@
     <button class="slider-arrow next-arrow" aria-label="Next Slide">&#10095;</button>
     
     <div class="slideshow-container" id="banner-slider">
-      <div class="slideshow-track">
-        <a href="shop.html?brand=Reflex" class="slide active">
-          <img src="Banner1.png" alt="Shop Reflex">
+      <div class="slideshow-track" id="slideshow-track">
+        <a href="shop.html?group=food" class="slide">
+          <img src="Banner_Food.png" alt="Shop Premium Pet Food">
         </a>
-        <a href="shop.html?brand=Petso" class="slide">
-          <img src="Banner2.png" alt="Shop Petso">
+        <a href="shop.html?group=accessories" class="slide">
+          <img src="Banner_Accessories.png" alt="Shop Handcrafted Accessories">
         </a>
-        <a href="shop.html?brand=Nutripaw" class="slide">
-          <img src="Banner_Nutripaw.jpg" alt="Shop Nutripaw">
+        <a href="shop.html?group=toys" class="slide">
+          <img src="Banner_Toys.png" alt="Shop Engaging Toys">
         </a>
-        <a href="shop.html?brand=Crunchy" class="slide">
-          <img src="Banner_Crunchy.jpg" alt="Shop Crunchy">
+        <a href="shop.html?group=treats" class="slide">
+          <img src="Banner_Treats.png" alt="Shop Healthy Treats">
         </a>
-        <a href="shop.html?brand=Petso" class="slide">
-          <img src="Banner_Meatrix.jpg" alt="Shop Petso Meatrix">
-        </a>
-        <a href="shop.html?brand=Petline" class="slide">
-          <img src="Banner_Petline.jpg" alt="Shop Petline">
-        </a>
-        <a href="shop.html?brand=Diamond Naturals" class="slide">
-          <img src="Banner3.svg" alt="Shop Diamond Naturals">
+        <a href="shop.html?group=grooming" class="slide">
+          <img src="Banner_Grooming.png" alt="Shop Grooming Essentials">
         </a>
       </div>
+      <div class="slider-dots" id="slider-dots"></div>
     </div>
   </section>
 
@@ -193,21 +197,38 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const slider = document.getElementById('banner-slider');
-      const slides = slider.querySelectorAll('.slide');
+      const sliderSection = document.querySelector('.brand-slideshow-section');
+      const track = document.getElementById('slideshow-track');
+      const slides = track.querySelectorAll('.slide');
       const nextBtn = document.querySelector('.next-arrow');
       const prevBtn = document.querySelector('.prev-arrow');
+      const dotsContainer = document.getElementById('slider-dots');
       
       let currentSlide = 0;
       let autoScrollInterval;
 
-      // Ensure the script only runs if there are slides
       if (slides.length === 0) return;
 
+      slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (index === 0) dot.classList.add('active');
+        
+        dot.addEventListener('click', () => {
+          goToSlide(index);
+          resetAutoScroll();
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      const dots = document.querySelectorAll('.dot');
+
       const goToSlide = (index) => {
-        slides[currentSlide].classList.remove('active');
         currentSlide = index;
-        slides[currentSlide].classList.add('active');
+        track.style.transform = `translateX(-${currentSlide * 100}vw)`;
+        
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[currentSlide].classList.add('active');
       };
 
       const goNext = () => {
@@ -221,7 +242,7 @@
       };
 
       const startAutoScroll = () => {
-        autoScrollInterval = setInterval(goNext, 4000); // Change slide every 4 seconds
+        autoScrollInterval = setInterval(goNext, 5000); 
       };
 
       const resetAutoScroll = () => {
@@ -229,7 +250,6 @@
         startAutoScroll();
       };
 
-      // Manual Navigation
       nextBtn.addEventListener('click', () => {
         goNext();
         resetAutoScroll();
@@ -240,9 +260,8 @@
         resetAutoScroll();
       });
 
-      // Pause auto-scrolling when the user hovers over the banner
-      slider.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
-      slider.addEventListener('mouseleave', startAutoScroll);
+      sliderSection.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+      sliderSection.addEventListener('mouseleave', startAutoScroll);
 
       startAutoScroll();
     });

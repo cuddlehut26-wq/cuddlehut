@@ -32,24 +32,16 @@
   text-decoration: none;
 }
 
-/* --- 3. THE PRODUCT IMAGE ---
-   object-fit: contain shows the whole bag without cropping.
-   padding: 20px acts like a studio backdrop. */
-/*shop.css*/
-/* ... other rules ... */
-
-/*THE PRODUCT IMAGE*/
+/* --- 3. THE PRODUCT IMAGE --- */
 .card-img {
   width: 100%;
   height: 240px; /* A fixed height that fits tall products perfectly */
-  object-fit: contain; /* THE FIX: This shows the entire bag/product with NO cropping */
+  object-fit: contain; /* Shows the entire bag/product with NO cropping */
   padding: 20px; /* Gives the product nice breathing room all around */
   background-color: var(--white); /* Ensures any empty space matches the card's background */
   border-bottom: 1px solid rgba(68, 65, 60, 0.05);
   transition: transform 0.5s ease;
 }
-
-/* ... other rules ... */
 
 .card-content { 
   padding: 20px; 

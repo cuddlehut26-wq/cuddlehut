@@ -25,7 +25,6 @@
   padding: 0 20px; text-align: center; position: relative; z-index: 1;
 }
 
-/* Removed the solid background and shadow, added text shadow for video contrast */
 .hero-content {
   background: transparent; 
   padding: 60px; border-radius: 16px;
@@ -33,7 +32,6 @@
   text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
 }
 
-/* Added friendly color classes for the hero text */
 .hero-title {
   color: var(--dmc-739) !important;
 }
@@ -127,7 +125,6 @@
   width: 100vw; 
   margin-left: calc(-50vw + 50%); 
   margin-right: calc(-50vw + 50%); 
-  padding: 40px 0; 
   position: relative; 
   z-index: 10;
   background: var(--dmc-739); 
@@ -162,42 +159,61 @@
 .prev-arrow { left: 20px; }
 .next-arrow { right: 20px; }
 
-/* Setup for Fade Animation */
+/* Sliding Animation Setup */
 .slideshow-container {
   position: relative;
   width: 100%;
-  height: 400px; /* Base height for desktop */
+  /* Removed fixed height so it dynamically sizes to the aspect ratio of the banner! */
   overflow: hidden;
+  display: flex; 
 }
 
 .slideshow-track {
+  display: flex;
   width: 100%;
-  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  align-items: stretch;
 }
 
 .slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-  z-index: 0;
+  flex: 0 0 100vw; 
   display: block;
-  background-color: #ddd;
-}
-
-.slide.active {
-  opacity: 1;
-  z-index: 1;
 }
 
 .slide img {
   width: 100%;
-  height: 100%;
-  object-fit: cover; 
+  height: auto; /* This guarantees perfect proportions edge-to-edge without letterboxing or cropping */
   display: block;
+}
+
+/* Progress Dots */
+.slider-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 20;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dot.active {
+  background: var(--dmc-976);
+  transform: scale(1.3);
 }
 
 /* --- BRANDS SECTION --- */
@@ -214,6 +230,64 @@
 }
 .brand-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
 
+/* --- CART SIDEBAR --- */
+#cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: -100%; 
+  width: 400px;
+  max-width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+  z-index: 10000;
+  transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+#cart-sidebar.cart-open {
+  right: 0;
+}
+
+.cart-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h2 { margin: 0; color: var(--dmc-3021, #44413c); font-size: 1.5rem; }
+
+#close-cart {
+  background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--dmc-3021, #44413c);
+}
+
+#cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fcfcfc;
+}
+
+.cart-footer {
+  padding: 20px;
+  background: #ffffff;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+#checkout-btn {
+  background-color: var(--dmc-976, #cb7a38); color: #ffffff;
+  border: none; padding: 16px; border-radius: 8px;
+  font-size: 1.1rem; font-weight: bold; cursor: pointer;
+  transition: background 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+}
+
+#checkout-btn:hover {
+  background-color: #a6622b;
+}
+
 /* --- RESPONSIVENESS --- */
 @media (max-width: 768px) {
   .hero-content { padding: 40px 20px; margin-top: 100px; }
@@ -223,12 +297,8 @@
   .philosophy-section { padding: 70px 20px; }
   
   /* Mobile Slideshow Adjustments */
-  .brand-slideshow-section { padding: 20px 0; }
-  .slideshow-container { height: 250px; } 
-  .slide { width: 100vw; height: 100%; }
-  
-  /* Smaller arrows on mobile */
   .slider-arrow { width: 40px; height: 40px; font-size: 1.2rem; }
   .prev-arrow { left: 10px; }
   .next-arrow { right: 10px; }
+  .dot { width: 10px; height: 10px; }
 }

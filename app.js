@@ -177,9 +177,18 @@ onAuthStateChanged(auth, (user) => {
     } else {
       navContainer.innerHTML = `
         <a href="shop.html">Shop</a>
+        <a href="#" id="cart-toggle" style="color: var(--dmc-976);">Cart (<span id="cart-count">0</span>)</a>
         <a href="login.html">Sign In</a>
         <a href="signup.html" style="color: var(--dmc-976);">Join</a>
       `;
+      const cartToggleBtn = document.getElementById('cart-toggle');
+      const cartSidebarBox = document.getElementById('cart-sidebar');
+      if (cartToggleBtn && cartSidebarBox) {
+        cartToggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          cartSidebarBox.classList.add('cart-open');
+        });
+      }
     }
 
     const menuToggle = document.getElementById('menu-toggle');
@@ -385,6 +394,8 @@ const initCuddleHut = () => {
         }
 
         querySnapshot.forEach((docSnap) => {
+          if (docSnap.id === "--STORE-SETTINGS--") return; // FIX: Prevent the shop from crashing by skipping the settings document
+
           const p = docSnap.data();
           p.id = docSnap.id;
 
@@ -547,7 +558,14 @@ const initCuddleHut = () => {
               variationHtml = `
                 <select id="variation-select" style="padding: 12px; margin-bottom: 20px; width: 100%; border-radius: 8px; border: 1px solid #ccc; font-family:'Montserrat'; cursor: pointer;">
                   <option value="${finalPrice}" data-name="${p.name.replace(/'/g, "\\'")}">Standard Base - PKR ${finalPrice.toFixed(2)}</option>
-                  ${p.variations.map(v => `<option value="${v.price}" data-name="${p.name.replace(/'/g, "\\'")} (${v.name})">${v.name} - PKR ${v.price.toFixed(2)}</option>`).join('')}
+                  ${p.variations.map(v => {
+                      // FIX: Apply the product's discount percentage to the variation prices too
+                      let vFinalPrice = v.price;
+                      if (p.discount && p.discount > 0) {
+                          vFinalPrice = v.price - (v.price * (p.discount / 100));
+                      }
+                      return `<option value="${vFinalPrice}" data-name="${p.name.replace(/'/g, "\\'")} (${v.name})">${v.name} - PKR ${vFinalPrice.toFixed(2)}</option>`;
+                  }).join('')}
                 </select>
               `;
           }
@@ -696,7 +714,7 @@ const initCuddleHut = () => {
           if (relatedWrapper && relatedGrid) {
              const allProductsSnap = await getDocs(collection(db, "products"));
              let otherProducts = [];
-             allProductsSnap.forEach(snap => { if(snap.id !== productId) otherProducts.push({ id: snap.id, ...snap.data() }); });
+             allProductsSnap.forEach(snap => { if(snap.id !== productId && snap.id !== "--STORE-SETTINGS--") otherProducts.push({ id: snap.id, ...snap.data() }); });
 
              otherProducts.sort((a, b) => {
                  if(a.category === p.category && b.category !== p.category) return -1;
