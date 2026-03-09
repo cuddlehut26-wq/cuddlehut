@@ -203,7 +203,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // --- 4. DOM LOADED EVENT LISTENERS & ANIMATIONS ---
-const initCuddleHut = () => {
+const initCuddleHut = async () => {
 
   const closeCart = document.getElementById('close-cart');
   const cartSidebar = document.getElementById('cart-sidebar');
@@ -335,10 +335,78 @@ const initCuddleHut = () => {
     });
   }
 
-  // --- SHOP GRID ---
+  // --- SHOP GRID & SIDEBAR LOGIC ---
   const productGrid = document.getElementById('product-grid');
   if (productGrid) {
-    async function loadShop(searchTerm = "", sortOption = "default") {
+    
+    const updateFilters = () => { loadShop(); };
+    window.updateFilters = updateFilters;
+
+    // 1. Fetch Dynamic Settings to Build Sidebar
+    let storeSettings = { brands: [], categories: [], types: [] };
+    try {
+        const settingsSnap = await getDoc(doc(db, "products", "--STORE-SETTINGS--"));
+        if (settingsSnap.exists()) {
+            storeSettings = settingsSnap.data();
+        }
+    } catch(e) { console.warn("Could not load settings for filters.", e); }
+
+    const populateCheckboxes = (containerId, items) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p style="font-size:0.8rem; color:#888;">None available</p>`;
+            return;
+        }
+        container.innerHTML = items.map(item => `
+            <label class="custom-checkbox">
+                <input type="checkbox" value="${item}">
+                <span>${item}</span>
+            </label>
+        `).join('');
+        
+        container.querySelectorAll('input').forEach(chk => {
+            chk.addEventListener('change', updateFilters);
+        });
+    };
+
+    populateCheckboxes('filter-categories-container', storeSettings.categories);
+    populateCheckboxes('filter-types-container', storeSettings.types);
+    populateCheckboxes('filter-brands-container', storeSettings.brands);
+
+    // Filter listeners
+    document.getElementById('filter-min-price')?.addEventListener('input', updateFilters);
+    document.getElementById('filter-max-price')?.addEventListener('input', updateFilters);
+
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const sortSelect = document.getElementById('sort-select');
+
+    if (searchInput && searchBtn) {
+      searchBtn.addEventListener('click', updateFilters);
+      searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') updateFilters(); });
+    }
+    if (sortSelect) sortSelect.addEventListener('change', updateFilters);
+
+    // Clear Filters logic
+    document.getElementById('clear-filters-btn')?.addEventListener('click', () => {
+        document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(c => c.checked = false);
+        if(document.getElementById('filter-min-price')) document.getElementById('filter-min-price').value = '';
+        if(document.getElementById('filter-max-price')) document.getElementById('filter-max-price').value = '';
+        if(searchInput) searchInput.value = '';
+        if(sortSelect) sortSelect.value = 'default';
+        
+        // Clear URL params visually so they don't lock the view
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.pushState({path:newUrl},'',newUrl);
+        
+        const banner = document.getElementById('active-brand-banner');
+        if(banner) banner.style.display = 'none';
+        
+        updateFilters();
+    });
+
+    async function loadShop() {
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const categoryFilter = urlParams.get('category');
@@ -373,9 +441,29 @@ const initCuddleHut = () => {
             }
         }
 
+        // Sidebar Selections
+        const minPriceVal = document.getElementById('filter-min-price')?.value;
+        const maxPriceVal = document.getElementById('filter-max-price')?.value;
+        const minPrice = minPriceVal !== "" && minPriceVal !== undefined ? parseFloat(minPriceVal) : 0;
+        const maxPrice = maxPriceVal !== "" && maxPriceVal !== undefined ? parseFloat(maxPriceVal) : Infinity;
+
+        const getChecked = (containerId) => {
+            const container = document.getElementById(containerId);
+            if(!container) return [];
+            return Array.from(container.querySelectorAll(`input:checked`)).map(el => el.value);
+        };
+        const checkedCategories = getChecked('filter-categories-container');
+        const checkedTypes = getChecked('filter-types-container');
+        const checkedBrands = getChecked('filter-brands-container');
+
+        const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
+        const sortOption = sortSelect ? sortSelect.value : "default";
+
+        // Query setup
         let productsQuery;
-        // Ignore "new-arrivals" and "best-sellers" when querying categories, filter them locally instead
-        if (categoryFilter && categoryFilter !== 'new-arrivals' && categoryFilter !== 'best-sellers') {
+        const isExactCategory = categoryFilter && categoryFilter.includes('-') && categoryFilter !== 'new-arrivals' && categoryFilter !== 'best-sellers';
+
+        if (isExactCategory) {
           productsQuery = query(collection(db, "products"), where("category", "==", categoryFilter));
         } else {
           productsQuery = collection(db, "products");
@@ -394,37 +482,44 @@ const initCuddleHut = () => {
         }
 
         querySnapshot.forEach((docSnap) => {
-          if (docSnap.id === "--STORE-SETTINGS--") return; // FIX: Prevent the shop from crashing by skipping the settings document
+          if (docSnap.id === "--STORE-SETTINGS--") return; 
 
           const p = docSnap.data();
           p.id = docSnap.id;
 
-          // 1. Checkbox Tag Filters
+          // URL Tag Filters
           if (categoryFilter === 'new-arrivals' && !p.isNewArrival) return;
           if (categoryFilter === 'best-sellers' && !p.isBestSeller) return;
           
-          // 2. Index Card Group Filters (Looks at productType directly)
+          // URL Broad Category Filters
+          if (categoryFilter && !isExactCategory && categoryFilter !== 'new-arrivals' && categoryFilter !== 'best-sellers') {
+            const typeString = p.productType || p.category || "";
+            if (!typeString.toLowerCase().includes(categoryFilter.toLowerCase())) return; 
+          }
           if (groupFilter) {
             const typeString = p.productType || p.category || "";
-            if (!typeString.toLowerCase().includes(groupFilter.toLowerCase())) {
-              return; 
-            }
+            if (!typeString.toLowerCase().includes(groupFilter.toLowerCase())) return; 
           }
-          
-          // 3. Brand Filter from URL
           if (brandFilter && p.brand !== brandFilter) return;
 
-          // 4. Search Bar Filters
+          // Text Search Filter
           if (searchTerm) {
-            const lowerSearch = searchTerm.toLowerCase();
-            const matchName = p.name ? p.name.toLowerCase().includes(lowerSearch) : false;
-            const matchDesc = p.description ? p.description.toLowerCase().includes(lowerSearch) : false;
-            const matchSeo = p.seo ? p.seo.toLowerCase().includes(lowerSearch) : false;
-            const matchBrand = p.brand ? p.brand.toLowerCase().includes(lowerSearch) : false;
+            const matchName = p.name ? p.name.toLowerCase().includes(searchTerm) : false;
+            const matchDesc = p.description ? p.description.toLowerCase().includes(searchTerm) : false;
+            const matchSeo = p.seo ? p.seo.toLowerCase().includes(searchTerm) : false;
+            const matchBrand = p.brand ? p.brand.toLowerCase().includes(searchTerm) : false;
             if (!matchName && !matchDesc && !matchSeo && !matchBrand) return; 
           }
 
           p.finalPrice = (p.discountedPrice && p.discountedPrice > 0 && p.discountedPrice < p.price) ? p.discountedPrice : p.price;
+          
+          // SIDEBAR Filters Integration
+          if (p.finalPrice < minPrice || p.finalPrice > maxPrice) return;
+          if (checkedCategories.length > 0 && (!p.petCategory || !checkedCategories.includes(p.petCategory))) return;
+          if (checkedTypes.length > 0 && (!p.productType || !checkedTypes.includes(p.productType))) return;
+          if (checkedBrands.length > 0 && (!p.brand || !checkedBrands.includes(p.brand))) return;
+
+          // Reviews
           const pReviews = allReviews.filter(r => r.productId === p.id);
           p.reviewCount = pReviews.length;
           p.avgRating = 0;
@@ -479,22 +574,6 @@ const initCuddleHut = () => {
     }
     
     loadShop();
-
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.getElementById('search-btn');
-    const sortSelect = document.getElementById('sort-select');
-
-    const updateFilters = () => {
-        const term = searchInput ? searchInput.value.trim() : "";
-        const sortMode = sortSelect ? sortSelect.value : "default";
-        loadShop(term, sortMode);
-    };
-
-    if (searchInput && searchBtn) {
-      searchBtn.addEventListener('click', updateFilters);
-      searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') updateFilters(); });
-    }
-    if (sortSelect) sortSelect.addEventListener('change', updateFilters);
   }
 
   // --- SINGLE PRODUCT & VARIATIONS ---

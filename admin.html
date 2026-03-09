@@ -23,9 +23,12 @@
   <div class="admin-content">
     
     <div id="products-section" class="admin-section active">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h1 style="color: var(--dmc-3021);">Product Registry</h1>
-        <button id="open-add-modal-btn">+ Add Product</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h1 style="color: var(--dmc-3021); margin: 0;">Product Registry</h1>
+        <div style="display:flex; gap: 10px; align-items: center;">
+          <input type="text" id="admin-product-search" placeholder="Search products..." style="padding: 10px 15px; border-radius: 6px; border: 1px solid #ccc; width: 250px; font-family: 'Montserrat'; margin: 0;">
+          <button id="open-add-modal-btn">+ Add Product</button>
+        </div>
       </div>
       <table id="products-table">
         <thead>

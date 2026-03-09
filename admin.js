@@ -560,3 +560,21 @@ async function markOrderDone(id) {
     loadOrders(); 
   }
 }
+
+// --- ADMIN PRODUCT SEARCH FILTER ---
+const adminSearchInput = document.getElementById('admin-product-search');
+if (adminSearchInput) {
+    adminSearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#products-table tbody tr');
+        
+        tableRows.forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+            if (rowText.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+}

@@ -37,32 +37,74 @@
     <h1 style="text-align:center; font-size: 3.5rem; margin-bottom: 10px;">The Shop</h1>
     <p style="text-align:center; margin-bottom: 40px;">Curated essentials for your companion.</p>
     
-    <div style="max-width: 850px; margin: 0 auto 50px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; position: relative;">
-      <div style="flex: 1; min-width: 300px; display: flex; gap: 10px; position: relative;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 2;">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="search-input" placeholder="Search for food, toys, treats..." style="flex: 1; padding: 18px 20px 18px 55px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)'; this.style.boxShadow='0 0 0 3px rgba(203, 122, 56, 0.1)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.02)';">
-        <button id="search-btn" class="btn" style="padding: 18px 35px; border-radius: 50px;">Search</button>
-      </div>
+    <div class="shop-layout">
+      
+      <aside class="filter-sidebar" id="filter-sidebar">
+        <h3 style="margin-bottom: 20px; color: var(--dmc-3021); border-bottom: 2px solid var(--dmc-976); padding-bottom: 10px;">Filters</h3>
+        
+        <div class="filter-group">
+            <h4>Price Range (PKR)</h4>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="number" id="filter-min-price" placeholder="Min" class="filter-input" min="0">
+                <span style="color:#888;">-</span>
+                <input type="number" id="filter-max-price" placeholder="Max" class="filter-input" min="0">
+            </div>
+        </div>
 
-      <select id="sort-select" style="padding: 18px 25px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: bold; outline: none; background: var(--white); color: var(--dmc-3021); cursor: pointer; transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)';" onblur="this.style.borderColor='#ddd';">
-        <option value="default">Sort: Recommended</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="rating-desc">Highest Rated</option>
-      </select>
-    </div>
-    
-    <div id="active-brand-banner" style="display: none; text-align: center; margin-bottom: 40px;">
-        <img id="active-brand-img" src="" alt="Brand Logo" style="max-height: 80px; width: auto; object-fit: contain; margin-bottom: 15px;">
-        <h2 id="active-brand-name" style="color: var(--dmc-3021); font-size: 2rem;"></h2>
-        <hr style="width: 50px; border: 2px solid var(--dmc-976); margin: 15px auto 0;">
-    </div>
+        <div class="filter-group">
+            <h4>Pet Category</h4>
+            <div id="filter-categories-container" class="checkbox-group">
+                <p style="font-size:0.8rem; color:#888;">Loading...</p>
+            </div>
+        </div>
 
-    <div id="product-grid" class="grid">
-      <p style="text-align: center; width: 100%; grid-column: 1 / -1;">Initializing inventory...</p>
+        <div class="filter-group">
+            <h4>Product Type</h4>
+            <div id="filter-types-container" class="checkbox-group">
+                 <p style="font-size:0.8rem; color:#888;">Loading...</p>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h4>Brands</h4>
+            <div id="filter-brands-container" class="checkbox-group">
+                <p style="font-size:0.8rem; color:#888;">Loading...</p>
+            </div>
+        </div>
+        
+        <button id="clear-filters-btn" class="btn-outline" style="width: 100%; margin-top: 10px;">Clear Filters</button>
+      </aside>
+
+      <main class="shop-main">
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; position: relative;">
+          <div style="flex: 1; min-width: 250px; display: flex; gap: 10px; position: relative;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 2;">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-input" placeholder="Search for food, toys, treats..." style="flex: 1; padding: 18px 20px 18px 55px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)'; this.style.boxShadow='0 0 0 3px rgba(203, 122, 56, 0.1)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.02)';">
+            <button id="search-btn" class="btn" style="padding: 18px 35px; border-radius: 50px;">Search</button>
+          </div>
+
+          <select id="sort-select" style="padding: 18px 25px; border-radius: 50px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: bold; outline: none; background: var(--white); color: var(--dmc-3021); cursor: pointer; transition: all 0.3s ease;" onfocus="this.style.borderColor='var(--dmc-976)';" onblur="this.style.borderColor='#ddd';">
+            <option value="default">Sort: Recommended</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating-desc">Highest Rated</option>
+          </select>
+        </div>
+        
+        <div id="active-brand-banner" style="display: none; text-align: center; margin-bottom: 40px;">
+            <img id="active-brand-img" src="" alt="Brand Logo" style="max-height: 80px; width: auto; object-fit: contain; margin-bottom: 15px;">
+            <h2 id="active-brand-name" style="color: var(--dmc-3021); font-size: 2rem;"></h2>
+            <hr style="width: 50px; border: 2px solid var(--dmc-976); margin: 15px auto 0;">
+        </div>
+
+        <div id="product-grid" class="grid">
+          <p style="text-align: center; width: 100%; grid-column: 1 / -1;">Initializing inventory...</p>
+        </div>
+      </main>
+      
     </div>
   </div>
 

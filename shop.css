@@ -5,6 +5,114 @@
   min-height: 100vh;
 }
 
+/* --- THE SHOP LAYOUT --- */
+.shop-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filter-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--white);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(68, 65, 60, 0.05);
+  position: sticky;
+  top: 100px; 
+  /* Makes the entire sidebar responsive and scrollable vertically */
+  max-height: calc(100vh - 120px); 
+  overflow-y: auto; 
+}
+
+/* Custom scrollbar for the sidebar itself */
+.filter-sidebar::-webkit-scrollbar { width: 6px; }
+.filter-sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+.shop-main {
+  flex-grow: 1;
+  min-width: 0; 
+}
+
+/* --- THE SIDEBAR FILTERS --- */
+.filter-group {
+  margin-bottom: 25px;
+}
+
+.filter-group h4 {
+  font-size: 1rem;
+  color: var(--dmc-3021);
+  margin-bottom: 12px;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.filter-input:focus {
+  border-color: var(--dmc-976);
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 5px; /* For scrollbar breathing room */
+}
+
+/* Scrollbar styling for internal filter lists */
+.checkbox-group::-webkit-scrollbar { width: 5px; }
+.checkbox-group::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.custom-checkbox:hover {
+  color: var(--dmc-976);
+}
+
+.custom-checkbox input {
+  accent-color: var(--dmc-976);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--dmc-976);
+  color: var(--dmc-976);
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s;
+}
+
+.btn-outline:hover {
+  background: var(--dmc-976);
+  color: var(--white);
+}
+
 /* --- 1. THE GRID ---
    auto-fill prevents a single item from stretching across the screen.
    minmax(260px, 280px) strictly locks the card size.
@@ -12,7 +120,7 @@
 .grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(260px, 280px)); 
-  gap: 40px; 
+  gap: 30px; 
   justify-content: center; 
 }
 
@@ -154,7 +262,15 @@
 }
 
 /* --- 6. MOBILE RESPONSIVENESS --- */
-@media (max-width: 768px) {
-  .shop-container { padding: 180px 20px 50px; }
+@media (max-width: 900px) {
+  .shop-container { padding: 120px 20px 50px; }
+  .shop-layout { flex-direction: column; }
+  .filter-sidebar { 
+    width: 100%; 
+    position: static; 
+    margin-bottom: 20px; 
+    /* Ensures the sidebar stays scrollable on mobile without taking up the entire screen */
+    max-height: 400px; 
+  }
   #cart-sidebar { width: 100%; right: -100%; }
 }
